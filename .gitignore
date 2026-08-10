@@ -16,6 +16,7 @@ models/*
 models/22muscle_2D_lumbar/*
 !models/22muscle_2D_lumbar/myoLeg28_2D_LUMBAR.xml
 !models/22muscle_2D_lumbar/VALIDATION.md
+!models/22muscle_2D_lumbar/PHASE4_PHYSICS.md
 
 # Lumbar build, preview and validation tools.
 !tools/
@@ -23,3 +24,5 @@ tools/*
 !tools/build_lumbar_model.py
 !tools/preview_lumbar_models.py
 !tools/validate_lumbar_model.py
+!tools/lumbar_control.py
+!tools/validate_lumbar_physics.py

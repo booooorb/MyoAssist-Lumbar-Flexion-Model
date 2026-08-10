@@ -33,6 +33,18 @@ python .my_venv/bin/mjpython tools/preview_lumbar_models.py \
 
 This is the original 22-muscle leg model plus six lumbar muscles.
 
+## Run the non-RL physics checks
+
+```bash
+cd "/Users/borb/Documents/MyoSuite Lumbar Flexion/MyoAssist" && \
+source .my_venv/bin/activate && \
+python tools/validate_lumbar_physics.py
+```
+
+This checks the full lumbar range, signed flexion/extension control, tendons,
+moment arms, contacts, passive forces, neutral stability and preservation of
+the original leg mechanics. It does not load or train an RL policy.
+
 ## Controls
 
 - **Space:** pause or resume

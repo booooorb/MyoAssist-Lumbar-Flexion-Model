@@ -159,6 +159,22 @@ def transplant_tendons_and_actuators(
         target_actuators.append(actuator_copy)
 
 
+def add_disabled_neutral_lock(target_root: etree._Element) -> None:
+    """Add an opt-in equality used only for neutral-lumbar physics checks."""
+    equality = require_one(target_root, "./equality", "target equality section")
+    equality.append(
+        etree.Element(
+            "joint",
+            name="lumbar_neutral_lock",
+            joint1="lumbar_extension",
+            polycoef="0 0 0 0 0",
+            active="false",
+            solref="0.001 1",
+            solimp="0.9999 0.9999 0.001 0.5 2",
+        )
+    )
+
+
 def insert_keyframe_coordinate(root: etree._Element, qpos_index: int, qvel_index: int) -> None:
     keys = root.xpath("./keyframe/key")
     if not keys:
@@ -236,6 +252,7 @@ def build_model_bytes() -> bytes:
     insert_before_first_body(torso, make_wrap_geom())
     transplant_sites(donor_sacrum, donor_lumbar, pelvis, torso)
     transplant_tendons_and_actuators(donor_assets, root)
+    add_disabled_neutral_lock(root)
     insert_keyframe_coordinate(root, qpos_index, qvel_index)
 
     etree.indent(baseline_tree, space="    ")

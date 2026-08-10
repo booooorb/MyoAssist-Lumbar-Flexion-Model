@@ -492,6 +492,7 @@
         <joint joint1="gastroc_l_med_gas_l-P2_x" joint2="knee_angle_l" polycoef="-0.02607 0.00676 0.0009439 -0.001031 -6.818e-05" solimp="0.9999 0.9999 0.001 0.5 2"/>
         <joint joint1="gastroc_l_med_gas_l-P2_y" joint2="knee_angle_l" polycoef="-0.3989 0.005715 0.000798 -0.000872 -5.764e-05" solimp="0.9999 0.9999 0.001 0.5 2"/>
         <joint joint1="gastroc_l_med_gas_l-P2_z" joint2="knee_angle_l" polycoef="0.02498 -0.001413 -0.0001974 0.0002157 1.426e-05" solimp="0.9999 0.9999 0.001 0.5 2"/>
+        <joint name="lumbar_neutral_lock" joint1="lumbar_extension" polycoef="0 0 0 0 0" active="false" solref="0.001 1" solimp="0.9999 0.9999 0.001 0.5 2"/>
     </equality>
     <sensor>
         <touch name="r_foot" site="r_foot_touch"/>

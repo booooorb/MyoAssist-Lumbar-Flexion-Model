@@ -43,4 +43,4 @@ Joint range: -0.8727 to 0.2618 rad. Positive torque is extension.
 - Equivalent XML defaults were renamed or written explicitly.
 - Baseline torso mass/inertia were retained; lateral bending and rotation were excluded.
 - Extended, neutral and flexed snapshot inspection passed.
-- Integrated XML SHA-256: `3556432a54dbb3e8f9bc091009e4bdaa23f3bde2db922aed6e2b024cec28ba0c`
+- Integrated XML SHA-256: `b74795ef959be648309071f2b5d5c7f937b46cc77781489c0c4a7434d4c30e07`

@@ -26,6 +26,8 @@ new work was integrating them into the walking model:
    lower-limb muscles.
 6. Added a neutral lumbar coordinate to the existing keyframes.
 7. Added preview, build and validation tools.
+8. Added a disabled-by-default `lumbar_neutral_lock` used only by the physics
+   validator to compare the legs against the original rigid-torso model.
 
 The donor and target torso origins already matched, so the attachment sites
 did not require manual scaling or approximate repositioning.
@@ -44,6 +46,12 @@ Automated checks confirmed that:
   lumbar sweep.
 
 See `models/22muscle_2D_lumbar/VALIDATION.md` for measurements.
+
+The expanded Phase 4 suite also verifies contacts, passive lumbar torque,
+short-horizon neutral-lumbar dynamics and zero-control standing. Both the
+original and integrated models fall without a controller, so this phase does
+not claim autonomous standing or walking. See
+`models/22muscle_2D_lumbar/PHASE4_PHYSICS.md`.
 
 ## Anatomical accuracy
 

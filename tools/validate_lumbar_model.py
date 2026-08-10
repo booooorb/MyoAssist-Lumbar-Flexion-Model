@@ -426,63 +426,43 @@ def build_report(
     lines = [
         "# Lumbar model validation",
         "",
-        "Status: **PASS — automated mechanical checks**",
+        "Status: **PASS**",
         "",
-        "The healthy 22-muscle XML and both donor XMLs were used as read-only inputs. "
-        "The integrated model is a separate additive file.",
+        "## Dimensions",
         "",
-        "## Compilation and dimensions",
-        "",
-        "| Model | nq | nv | nu | na | Result |",
-        "|---|---:|---:|---:|---:|---|",
+        "| Model | nq | nv | nu | na |",
+        "|---|---:|---:|---:|---:|",
     ]
     for label in PATHS:
         model = models[label]
-        lines.append(
-            f"| {label} | {model.nq} | {model.nv} | {model.nu} | {model.na} | PASS |"
-        )
+        lines.append(f"| {label} | {model.nq} | {model.nv} | {model.nu} | {model.na} |")
 
     lines.extend(
         [
             "",
-            "## Preservation checks",
+            "## Checks passed",
             "",
-            "- The first 22 actuator names, order, transmission references, limits, "
-            "types, and numeric muscle parameters match the healthy baseline.",
-            "- Existing body poses, masses, inertias, and named geometry parameters "
-            "match the healthy baseline.",
-            "- All 53 existing joint types, axes, limits, armatures, damping, and "
-            "friction parameters match the healthy baseline.",
-            "- All existing keyframes match after removing the new neutral lumbar "
-            "coordinate at index 33.",
-            "- The six compiled lumbar actuator parameters match the six-muscle donor.",
+            "- Original bodies, joints, geometry, keyframes and 22 actuators are preserved.",
+            "- The six lumbar actuator parameters match the donor.",
+            "- A 201-pose sweep produced no NaNs, moment-arm reversals or joint explosions.",
+            "- Every tendon remained finite, continuous and inside its donor length range.",
             "",
-            "## Lumbar sweep",
+            "## Muscle results",
             "",
-            "The full donor joint interval, -0.8727 to 0.2618 rad, was sampled at "
-            "201 poses. Moment arm is `d(tendon length)/d(lumbar_extension)`. "
-            "Under the donor convention, positive generalized torque is extension.",
+            "Joint range: -0.8727 to 0.2618 rad. Positive torque is extension.",
             "",
-            "| Muscle | Function | Tendon length observed (m) | Donor muscle range (m) | Neutral moment arm (m) | Active torque sign |",
-            "|---|---|---:|---:|---:|---|",
+            "| Muscle | Action | Observed length (m) | Donor range (m) | Moment arm (m) |",
+            "|---|---|---:|---:|---:|",
         ]
     )
-    functions = {
-        "ercspn_r": "Right erector spinae — extension",
-        "ercspn_l": "Left erector spinae — extension",
-        "intobl_r": "Right internal oblique — flexion",
-        "intobl_l": "Left internal oblique — flexion",
-        "extobl_r": "Right external oblique — flexion",
-        "extobl_l": "Left external oblique — flexion",
-    }
     for name in MUSCLES:
         item = sweep[name]
-        torque_sign = "positive (extension)" if item.active_torque > 0 else "negative (flexion)"
+        action = "Extension" if item.active_torque > 0 else "Flexion"
         lines.append(
-            f"| `{name}` | {functions[name]} | "
+            f"| `{name}` | {action} | "
             f"{item.minimum_length:.6f}–{item.maximum_length:.6f} | "
             f"{item.length_range[0]:.6f}–{item.length_range[1]:.6f} | "
-            f"{item.neutral_moment_arm:+.6f} | {torque_sign} |"
+            f"{item.neutral_moment_arm:+.6f} |"
         )
 
     pair_torques = {
@@ -496,9 +476,7 @@ def build_report(
     lines.extend(
         [
             "",
-            "At neutral with unit activation, the bilateral torque checks are:",
-            "",
-            "| Bilateral group | Generalized lumbar torque (N·m) | Result |",
+            "| Bilateral group | Torque at unit activation (N·m) | Action |",
             "|---|---:|---|",
         ]
     )
@@ -509,39 +487,13 @@ def build_report(
     lines.extend(
         [
             "",
-            "All swept tendon lengths were finite, remained inside their donor muscle "
-            "length ranges, and matched the donor model. No NaNs or kinematic joint "
-            "explosions occurred.",
+            "## Notes",
             "",
-            "## Donor parameters represented differently",
-            "",
-            "No numeric muscle, tendon-path, attachment-position, joint-range, damping, "
-            "or armature parameter was changed. A few XML class references were "
-            "resolved explicitly because the integrated file uses the baseline's "
-            "default namespace:",
-            "",
-            "- `myotorso_muscle` became the numerically identical baseline `muscle` class.",
-            "- Donor tendon width/colour, attachment-site size/group, and wrapping-geom "
-            "collision/colour properties were written explicitly.",
-            "- The donor torso mass/inertia was intentionally not transplanted; the "
-            "healthy baseline torso mass/inertia remains unchanged.",
-            "- Donor lateral-bending and axial-rotation joints were intentionally excluded.",
-            "",
-            "## Visual inspection",
-            "",
-            "Status: **PASS — three-pose snapshot review (2026-08-10)**",
-            "",
-            f"Integrated XML SHA-256: `{file_sha256(PATHS['Integrated model'])}`",
-            "",
-            "- The six donor paths and their integrated copies remain visually continuous "
-            "at 0.15 rad extension, neutral, and -0.40 rad flexion.",
-            "- No tendon crossing reversal, detached segment, obvious lumbar body "
-            "penetration, or joint explosion was visible in the integrated snapshots.",
-            "- The full 210-muscle donor also rendered in all three poses and remains "
-            "reference-only.",
-            "",
-            "This visual review supplements the numeric 201-pose sweep; it is not a "
-            "contact-force or anatomical validation study.",
+            "- Numeric donor muscle and joint parameters were retained.",
+            "- Equivalent XML defaults were renamed or written explicitly.",
+            "- Baseline torso mass/inertia were retained; lateral bending and rotation were excluded.",
+            "- Extended, neutral and flexed snapshot inspection passed.",
+            f"- Integrated XML SHA-256: `{file_sha256(PATHS['Integrated model'])}`",
             "",
         ]
     )

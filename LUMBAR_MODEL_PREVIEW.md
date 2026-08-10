@@ -1,76 +1,56 @@
-# Lumbar model preview guide
+# Running the lumbar models
 
-These viewers are kinematic inspections only. They do not load an RL policy,
-train a policy, or change any model file. The animated sweep repeats until you
-close the MuJoCo window.
+These commands only preview movement. They do not train or modify a policy.
 
-## Launch commands
-
-### 1. Six-muscle abdomen donor
+## Six-muscle donor
 
 ```bash
 cd "/Users/borb/Documents/MyoSuite Lumbar Flexion/MyoAssist" && \
 source .my_venv/bin/activate && \
 python .my_venv/bin/mjpython tools/preview_lumbar_models.py \
-  --model abdomen \
-  --mode animate
+  --model abdomen --mode animate
 ```
 
-This is the source of the six transplanted muscles. It uses the
-`lumbar_extension` coordinate.
-
-### 2. Full 210-muscle MyoTorso reference
+## Full 210-muscle MyoTorso reference
 
 ```bash
 cd "/Users/borb/Documents/MyoSuite Lumbar Flexion/MyoAssist" && \
 source .my_venv/bin/activate && \
 python .my_venv/bin/mjpython tools/preview_lumbar_models.py \
-  --model full \
-  --mode animate
+  --model full --mode animate
 ```
 
-This model is preview-only and was not merged into the leg model. It uses the
-`flex_extension` coordinate and its existing segmental equality mappings.
+This model is reference-only and was not merged into the leg model.
 
-### 3. Integrated 28-muscle model
+## Integrated 28-muscle model
 
 ```bash
 cd "/Users/borb/Documents/MyoSuite Lumbar Flexion/MyoAssist" && \
 source .my_venv/bin/activate && \
 python .my_venv/bin/mjpython tools/preview_lumbar_models.py \
-  --model integrated \
-  --mode animate
+  --model integrated --mode animate
 ```
 
-This opens the new model at
-`models/22muscle_2D_lumbar/myoLeg28_2D_LUMBAR.xml`. It contains the unchanged
-22 leg muscles plus the six lumbar muscles and uses `lumbar_extension`.
+This is the original 22-muscle leg model plus six lumbar muscles.
 
-## Viewer controls
+## Controls
 
-- Drag in the window to rotate or reposition the camera; it tracks the torso.
-- Press **Space** to pause or resume the slow repeating sweep.
-- Press **R** to return to neutral and pause.
-- Close the viewer window to exit cleanly.
-- Change `--mode animate` to `--mode static` for a stationary inspection.
-- Add `--angle VALUE` in static mode to select a pose in radians. The integrated
-  and six-muscle models allow -0.8727 to 0.2618 rad. Positive is extension;
-  negative is flexion under the donor convention.
+- **Space:** pause or resume
+- **R:** return to neutral and pause
+- **Mouse:** rotate or reposition the torso-following camera
+- Use `--mode static` for stationary inspection
+- Close the window to exit
 
-Tendons, tendon wrapping geometry, and actuator-force colours are enabled by
-the script. Dark or changing tendon colours are MuJoCo's actuator-force
-visualization, not missing muscle geometry.
+For the donor and integrated model, positive angle is extension and negative
+angle is flexion. Tendons and actuator-force colours are shown automatically.
 
-## Six-muscle index
+## Added muscles
 
-| Actuator | Side | Donor muscle | Primary sagittal action |
-|---|---|---|---|
-| `ercspn_r` | Right | Erector spinae | Lumbar extension |
-| `ercspn_l` | Left | Erector spinae | Lumbar extension |
-| `intobl_r` | Right | Internal oblique | Lumbar flexion |
-| `intobl_l` | Left | Internal oblique | Lumbar flexion |
-| `extobl_r` | Right | External oblique | Lumbar flexion |
-| `extobl_l` | Left | External oblique | Lumbar flexion |
-
-The detailed mechanical results are in
-`models/22muscle_2D_lumbar/VALIDATION.md`.
+| Actuator | Muscle | Action |
+|---|---|---|
+| `ercspn_r` | Right erector spinae | Extension |
+| `ercspn_l` | Left erector spinae | Extension |
+| `intobl_r` | Right internal oblique | Flexion |
+| `intobl_l` | Left internal oblique | Flexion |
+| `extobl_r` | Right external oblique | Flexion |
+| `extobl_l` | Left external oblique | Flexion |

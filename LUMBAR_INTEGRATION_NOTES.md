@@ -1,154 +1,64 @@
-# Lumbar integration: changes and anatomical accuracy
+# Lumbar integration summary
 
-## What was created
+## Result
 
-The new model is:
+`models/22muscle_2D_lumbar/myoLeg28_2D_LUMBAR.xml` is a new model containing:
 
-`models/22muscle_2D_lumbar/myoLeg28_2D_LUMBAR.xml`
-
-It is a separate copy of the healthy 22-muscle leg model with six lumbar
-muscles added. The original healthy model and both MyoTorso donor models were
-not overwritten.
-
-The resulting actuator set is:
-
-- 22 original lower-limb muscles;
+- the original 22 lower-limb muscles;
 - right and left erector spinae;
 - right and left internal oblique;
 - right and left external oblique.
 
-No reinforcement-learning policy, reward, weakness configuration or walking
-checkpoint was changed.
+The original 22-muscle model and MyoTorso donor files were not overwritten.
+No RL policy, reward or checkpoint was changed.
 
-## Changes made to the model
+## Work completed
 
-### 1. Added one lumbar joint
+The six muscles already existed in MyoSuite's `myotorso_abdomen` model. The
+new work was integrating them into the walking model:
 
-A sagittal `lumbar_extension` hinge was added between the existing pelvis and
-torso. Its properties came from the six-muscle `myotorso_abdomen` donor:
+1. Added one `lumbar_extension` hinge between the pelvis and torso.
+2. Copied the 12 donor attachment sites into the matching pelvis and torso
+   frames.
+3. Added the donor wrapping cylinder used by the erector-spinae paths.
+4. Copied all six tendon paths and muscle actuator parameters.
+5. Retained the walking model's original torso mass, inertia, limbs and 22
+   lower-limb muscles.
+6. Added a neutral lumbar coordinate to the existing keyframes.
+7. Added preview, build and validation tools.
 
-| Property | Value |
-|---|---:|
-| Range | -0.8727 to 0.2618 rad |
-| Damping | 0.5 |
-| Armature | 0.01 |
-| Axis | Sagittal flexion–extension |
+The donor and target torso origins already matched, so the attachment sites
+did not require manual scaling or approximate repositioning.
 
-Under the donor convention, positive angle/torque represents extension and
-negative angle/torque represents flexion.
+## Validation
 
-### 2. Transplanted the muscle geometry
+The integrated model compiles as `nq=54`, `nv=54`, `nu=28`, `na=28`.
+Automated checks confirmed that:
 
-The donor pelvis attachment sites, torso attachment sites and cylindrical
-pelvis wrapping geomeWeregin and the existing torso origin were
-already identical, so no approximate rescaling or manual repositioning was
-required.
+- the original bodies, joints, geometry, keyframes and 22 actuators are
+  preserved;
+- all six tendon lengths remain inside their donor muscle ranges;
+- erector spinae produce extension torque;
+- both oblique groups produce flexion torque;
+- no moment-arm reversals, NaNs or joint explosions occur during a 201-pose
+  lumbar sweep.
 
-The erector-spinae paths pass around the donor wrapping cylinder. The oblique
-paths connect their pelvis and torso attachment sites directly.
+See `models/22muscle_2D_lumbar/VALIDATION.md` for measurements.
 
-### 3. Transplanted the tendon and actuator parameters
+## Anatomical accuracy
 
-The six donor tendon paths, muscle length ranges, gain parameters, bias
-parameters, activation dynamics and control limits were retained. XML class
-names were changed where necessary to use the numerically equivalent defaults
-already present in the leg model.
+The model is **mechanically faithful to the six-muscle MyoTorso donor**, but it
+is only **anatomically inspired**, not a clinically complete lumbar spine.
 
-The original torso mass and inertia were deliberately retained. The donor
-torso mass was not substituted.
+Main limitations:
 
-### 4. Updated the existing poses
+- one hinge and one rigid torso replace the individual vertebrae and discs;
+- only sagittal flexion-extension is enabled;
+- multifidus, quadratus lumborum, ligaments and abdominal pressure are absent;
+- six grouped paths simplify real muscle architecture;
+- strength and motion have not been validated against subject-specific EMG,
+  motion capture or spinal-load measurements.
 
-A neutral lumbar value was inserted into every existing keyframe. Removing
-that added coordinate reproduces the original keyframe exactly.
-
-### 5. Added inspection and validation tools
-
-`tools/preview_lumbar_models.py` previews:
-
-- the six-muscle abdomen donor;
-- the full 210-muscle MyoTorso reference;
-- the integrated 28-muscle model.
-
-`tools/validate_lumbar_model.py` checks compilation, preserved model
-parameters, tendon lengths, moment-arm signs, muscle torque directions and a
-201-pose lumbar sweep.
-
-## Validation results
-
-The integrated model compiles with:
-
-| Quantity | Value |
-|---|---:|
-| `nq` | 54 |
-| `nv` | 54 |
-| `nu` | 28 |
-| `na` | 28 |
-
-The checks confirmed that:
-
-- all 22 original actuators and their parameters remain unchanged;
-- existing bodies, inertias, geometry and joint parameters remain unchanged;
-- all six lumbar tendon lengths remain inside the donor muscle ranges;
-- right/left attachment geometry is symmetric;
-- erector-spinae activation produces extension torque;
-- internal- and external-oblique activation produces flexion torque;
-- the tendon moment arms do not reverse during the permitted lumbar sweep;
-- no NaNs, detached tendon segments or joint explosions appeared.
-
-Detailed measurements are recorded in
-`models/22muscle_2D_lumbar/VALIDATION.md`.
-
-## Is it anatomically accurate?
-
-### Accurate relative to the selected donor
-
-The integration is mechanically faithful to the six-muscle MyoTorso abdomen
-model. The effective attachment positions, tendon paths, wrapping geometry,
-joint limits and compiled muscle parameters match that donor. The transplant
-therefore preserves the anatomical assumptions already made by MyoSuite.
-
-### Not a high-fidelity anatomical lumbar spine
-
-The integrated model should be described as **anatomically inspired and
-mechanically consistent**, not as a clinically complete lumbar model.
-
-Its main limitations are:
-
-- the lumbar spine is represented by one hinge and one rigid torso segment;
-- individual vertebrae, discs, facet joints and spinal ligaments are absent;
-- only sagittal flexion–extension is enabled;
-- lateral bending and axial rotation are excluded;
-- six grouped muscle paths represent much more complicated real muscle
-  architecture;
-- deep stabilizers such as multifidus and quadratus lumborum are not included;
-- abdominal pressure and passive soft-tissue effects are not represented;
-- the retained torso inertia belongs to the original leg model rather than the
-  donor torso;
-- muscle strengths have not been calibrated to a particular subject or
-  validated against EMG, motion-capture or in-vivo spinal loading data.
-
-The full 210-muscle MyoTorso model contains substantially more spinal and
-muscle detail, but it depends on multiple vertebral bodies and cannot be
-faithfully reduced to the current single-segment torso by copying its muscles
-alone.
-
-## Appropriate interpretation
-
-This 28-muscle model is suitable for:
-
-- confirming that active lumbar flexion and extension can be represented;
-- visually inspecting simplified lumbar muscle paths;
-- testing moment-arm and torque direction;
-- preparing a later RL environment with six additional control outputs.
-
-It is not yet sufficient for:
-
-- clinical conclusions about lumbar loading or injury;
-- predicting individual muscle recruitment in humans;
-- comparing vertebra-by-vertebra motion;
-- claiming validated human lumbar biomechanics.
-
-Further anatomical validation should compare lumbar kinematics, moment arms,
-maximum torque, muscle activation and spinal loads against experimental or
-published human data before the model is used for biomechanical conclusions.
+It is suitable for testing simplified active lumbar control and preparing
+future RL integration. It should not yet be used for clinical conclusions or
+vertebra-level biomechanical predictions.

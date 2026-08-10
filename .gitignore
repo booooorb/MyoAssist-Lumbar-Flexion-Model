@@ -1,0 +1,25 @@
+# This repository publishes only the lumbar-integration deliverables created
+# for this project. Add a new exception whenever another deliverable is added.
+*
+
+# Keep this allowlist file.
+!.gitignore
+
+# Documentation.
+!LUMBAR_INTEGRATION_NOTES.md
+!LUMBAR_MODEL_PREVIEW.md
+
+# Integrated model and generated validation report.
+!models/
+models/*
+!models/22muscle_2D_lumbar/
+models/22muscle_2D_lumbar/*
+!models/22muscle_2D_lumbar/myoLeg28_2D_LUMBAR.xml
+!models/22muscle_2D_lumbar/VALIDATION.md
+
+# Lumbar build, preview and validation tools.
+!tools/
+tools/*
+!tools/build_lumbar_model.py
+!tools/preview_lumbar_models.py
+!tools/validate_lumbar_model.py

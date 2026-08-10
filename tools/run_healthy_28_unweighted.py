@@ -69,7 +69,7 @@ def legacy_observation(
 
 
 def zero_lumbar_action(action: np.ndarray, model) -> np.ndarray:
-    """Append six exact zeros to the legacy policy's 22 controls."""
+    """Append normalized commands that map to zero physical lumbar control."""
     flat_action = np.asarray(action, dtype=np.float64).reshape(-1)
     if flat_action.size != LEG_ACTUATOR_COUNT:
         raise RuntimeError(
@@ -77,7 +77,27 @@ def zero_lumbar_action(action: np.ndarray, model) -> np.ndarray:
         )
     padded = np.zeros(model.nu, dtype=flat_action.dtype)
     padded[:LEG_ACTUATOR_COUNT] = flat_action
+    lumbar_ranges = np.asarray(
+        model.actuator_ctrlrange[LEG_ACTUATOR_COUNT:], dtype=np.float64
+    )
+    midpoint = np.mean(lumbar_ranges, axis=1)
+    half_range = (lumbar_ranges[:, 1] - lumbar_ranges[:, 0]) / 2.0
+    if np.any(half_range <= 0):
+        raise RuntimeError("A lumbar actuator has an invalid control range")
+    # MyoSuite's normalized action 0 is the control-range midpoint. For muscle
+    # ctrlrange=[0, 1], physical zero is therefore normalized action -1.
+    padded[LEG_ACTUATOR_COUNT:] = np.clip(
+        (0.0 - midpoint) / half_range, -1.0, 1.0
+    )
     return padded
+
+
+def normalized_to_physical(action: np.ndarray, model) -> np.ndarray:
+    """Apply MyoSuite's normalized-action mapping without creating an env."""
+    control_ranges = np.asarray(model.actuator_ctrlrange, dtype=np.float64)
+    midpoint = np.mean(control_ranges, axis=1)
+    half_range = (control_ranges[:, 1] - control_ranges[:, 0]) / 2.0
+    return midpoint + np.asarray(action) * half_range
 
 
 def enable_neutral_lock(model, data) -> int:
@@ -198,9 +218,10 @@ def run_smoke_test(args: argparse.Namespace) -> int:
     validate_compatibility(model, policy, observation)
     action, _ = policy.predict(observation, deterministic=True)
     padded_action = zero_lumbar_action(action, model)
+    physical_action = normalized_to_physical(padded_action, model)
 
     for _ in range(args.smoke_steps):
-        data.ctrl[:] = padded_action
+        data.ctrl[:] = physical_action
         mujoco.mj_step(model, data)
         if not np.all(np.isfinite(data.qpos)) or not np.all(np.isfinite(data.qvel)):
             raise RuntimeError("Non-finite state in compatibility smoke test")
@@ -212,7 +233,8 @@ def run_smoke_test(args: argparse.Namespace) -> int:
     print("Healthy 28-muscle compatibility model ready")
     print("  checkpoint action/observation interface: 22 actions / 44 values")
     print("  physical model: 28 muscles")
-    print("  lumbar controls and policy weights: none (six exact zeros)")
+    print("  lumbar physical controls: six exact zeros")
+    print("  lumbar policy weights: none")
     print("  lumbar joint: locked at neutral")
     print(f"PASS: {args.smoke_steps}-step compatibility smoke test")
     return 0
@@ -231,7 +253,7 @@ def run(args: argparse.Namespace) -> int:
         print("Healthy 28-muscle compatibility model ready")
         print("  legacy policy outputs: 22")
         print("  physical model controls: 28")
-        print("  lumbar controls: six exact zeros")
+        print("  lumbar physical controls: six exact zeros")
         print("  lumbar policy weights: none")
         print("  lumbar joint: locked at neutral")
 

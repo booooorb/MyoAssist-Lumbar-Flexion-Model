@@ -13,6 +13,9 @@ This is a compatibility baseline, not a newly trained policy.
 The lumbar muscles still exist physically and retain their passive muscle and
 tendon parameters. "Unweighted" means that the neural policy has no outputs or
 learned weights for them; it does not remove their anatomical parameters.
+MyoSuite uses normalized actions, so the adapter sends `-1` for each lumbar
+action; with a muscle control range of `[0, 1]`, this becomes physical control
+`0`. A normalized action of `0` would incorrectly become 50% excitation.
 The original 22 leg muscles still use the healthy checkpoint—without those
 existing weights, this would not be a walking model.
 

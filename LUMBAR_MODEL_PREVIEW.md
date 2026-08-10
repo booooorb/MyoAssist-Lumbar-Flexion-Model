@@ -45,6 +45,13 @@ This checks the full lumbar range, signed flexion/extension control, tendons,
 moment arms, contacts, passive forces, neutral stability and preservation of
 the original leg mechanics. It does not load or train an RL policy.
 
+## Healthy walking compatibility baseline
+
+To run the existing 22-output healthy walking policy on the 28-muscle physical
+model, with all six lumbar controls fixed to zero, see
+`HEALTHY_28_UNWEIGHTED.md`. This is not a lumbar-trained policy: the lumbar
+joint is held neutral and only the original leg muscles receive policy output.
+
 ## Controls
 
 - **Space:** pause or resume

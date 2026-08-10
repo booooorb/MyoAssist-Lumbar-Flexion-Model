@@ -8,6 +8,7 @@
 # Documentation.
 !LUMBAR_INTEGRATION_NOTES.md
 !LUMBAR_MODEL_PREVIEW.md
+!HEALTHY_28_UNWEIGHTED.md
 
 # Integrated model and generated validation report.
 !models/
@@ -26,3 +27,4 @@ tools/*
 !tools/validate_lumbar_model.py
 !tools/lumbar_control.py
 !tools/validate_lumbar_physics.py
+!tools/run_healthy_28_unweighted.py

@@ -53,6 +53,11 @@ original and integrated models fall without a controller, so this phase does
 not claim autonomous standing or walking. See
 `models/22muscle_2D_lumbar/PHASE4_PHYSICS.md`.
 
+`tools/run_healthy_28_unweighted.py` provides a separate compatibility run:
+the old healthy policy controls its original 22 leg muscles, while the six
+lumbar controls are padded with zeros and the lumbar joint is held neutral.
+It does not add learned lumbar weights or change the source checkpoint.
+
 ## Anatomical accuracy
 
 The model is **mechanically faithful to the six-muscle MyoTorso donor**, but it

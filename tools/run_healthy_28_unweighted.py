@@ -39,11 +39,17 @@ LUMBAR_ACTUATORS = (
 )
 
 
+def raw_handle(value):
+    """Return the low-level MuJoCo object from raw or dm_control wrappers."""
+    return value.ptr if hasattr(value, "ptr") else value
+
+
 def actuator_names(model) -> tuple[str, ...]:
     import mujoco
 
+    raw_model = raw_handle(model)
     return tuple(
-        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_ACTUATOR, index)
+        mujoco.mj_id2name(raw_model, mujoco.mjtObj.mjOBJ_ACTUATOR, index)
         for index in range(model.nu)
     )
 
@@ -78,18 +84,20 @@ def enable_neutral_lock(model, data) -> int:
     """Enable the test-only lock and reset the lumbar coordinate to neutral."""
     import mujoco
 
+    raw_model = raw_handle(model)
+    raw_data = raw_handle(data)
     equality_id = mujoco.mj_name2id(
-        model, mujoco.mjtObj.mjOBJ_EQUALITY, "lumbar_neutral_lock"
+        raw_model, mujoco.mjtObj.mjOBJ_EQUALITY, "lumbar_neutral_lock"
     )
     joint_id = mujoco.mj_name2id(
-        model, mujoco.mjtObj.mjOBJ_JOINT, "lumbar_extension"
+        raw_model, mujoco.mjtObj.mjOBJ_JOINT, "lumbar_extension"
     )
     if equality_id < 0 or joint_id < 0:
         raise RuntimeError("The integrated model lacks its lumbar joint or neutral lock")
     data.eq_active[equality_id] = 1
     data.qpos[model.jnt_qposadr[joint_id]] = 0.0
     data.qvel[model.jnt_dofadr[joint_id]] = 0.0
-    mujoco.mj_forward(model, data)
+    mujoco.mj_forward(raw_model, raw_data)
     return equality_id
 
 

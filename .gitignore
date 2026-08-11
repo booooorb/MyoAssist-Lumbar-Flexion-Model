@@ -6,10 +6,7 @@
 !.gitignore
 
 # Documentation.
-!LUMBAR_INTEGRATION_NOTES.md
-!LUMBAR_MODEL_PREVIEW.md
-!HEALTHY_28_UNWEIGHTED.md
-!SUPERVISOR_STATUS_AND_DECISIONS.md
+!README.md
 
 # Integrated model and generated validation report.
 !models/
@@ -17,8 +14,6 @@ models/*
 !models/22muscle_2D_lumbar/
 models/22muscle_2D_lumbar/*
 !models/22muscle_2D_lumbar/myoLeg28_2D_LUMBAR.xml
-!models/22muscle_2D_lumbar/VALIDATION.md
-!models/22muscle_2D_lumbar/PHASE4_PHYSICS.md
 
 # Lumbar build, preview and validation tools.
 !tools/
